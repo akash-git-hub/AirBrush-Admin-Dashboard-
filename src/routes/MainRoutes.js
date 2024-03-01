@@ -7,8 +7,8 @@ import MainLayout from 'layout/MainLayout';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const VendorList = Loadable(lazy(() => import('pages/vendor-list/VendorList')));
-const  EventList = Loadable(lazy(() => import('pages/event-list/EventList')));
-const  OrderList = Loadable(lazy(() => import('pages/order-list/OrderList')));
+const EventList = Loadable(lazy(() => import('pages/event-list/EventList')));
+const OrderList = Loadable(lazy(() => import('pages/order-list/OrderList')));
 
 
 

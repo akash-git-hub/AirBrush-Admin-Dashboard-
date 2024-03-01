@@ -1,5 +1,5 @@
 // assets
-import { DashboardOutlined, UsergroupAddOutlined, SolutionOutlined, FileProtectOutlined  } from '@ant-design/icons';
+import { DashboardOutlined, UsergroupAddOutlined, SolutionOutlined, FileProtectOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -37,7 +37,7 @@ const dashboard = {
       title: 'Vendor List',
       type: 'item',
       url: '/vendor-list',
-      icon: icons.UsergroupAddOutlined, 
+      icon: icons.UsergroupAddOutlined,
       breadcrumbs: true
     },
     // {
