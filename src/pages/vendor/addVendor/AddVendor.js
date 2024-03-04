@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import * as Yup from 'yup';
-import { addVendor } from "../../../networking/NetworkCall"
+import { addVendor } from "../../../networking/NetworkCall";
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useNavigate } from "react-router-dom"
 import {
     Button,
     Grid,
@@ -30,6 +34,8 @@ const AddVendor = () => {
     const handleClose = () => setOpen(false);
     const [logo, setLogo] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate()
+
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -40,10 +46,14 @@ const AddVendor = () => {
     };
 
     const handleLogoChange = (event) => {
-        // Logic to handle file upload
         const file = event.target.files[0];
-        if (file) {
-            setLogo(URL.createObjectURL(file));
+        if (file && file.type.startsWith("image")) {
+            setFieldValue("company_logo", file);
+            setLogo(file);
+        } else {
+            toast.error("Please select image type file");
+            setFieldValue("company_logo", null);
+            setLogo(null);
         }
     };
 
@@ -55,46 +65,49 @@ const AddVendor = () => {
         handleBlur,
         handleChange,
         handleSubmit,
-        isSubmitting
+        isSubmitting,
+        setFieldValue
     } = useFormik({
         initialValues: {
             email: '',
             password: '',
-            company_logo: logo,
             name: '',
             mobile: '',
-            organization_name: ''
+            organization_name: '',
+            company_logo: null
         },
 
         validationSchema: Yup.object().shape({
             email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
             password: Yup.string().max(255).required('Password is required'),
-            company_logo: Yup.mixed()
-                .required('Logo should be an image format')
-                .test(
-                    'fileFormat',
-                    'Supported image formats: jpg, jpeg, png, gif',
-                    (value) => value && value.type.startsWith('image/')
-                ),
             name: Yup.string().max(200).required('Name is Required'),
+            company_logo: Yup.string().required("Company logo is required"),
             mobile: Yup.string().required('Mobile number is required'),
             organization_name: Yup.string().required('Organization name is required')
         }),
 
         onSubmit: async (values, { setErrors, setStatus, setSubmitting }) => {
-            console.log("this is values----------------->", values)
-            // const res = await addVendor(values);
-            // if (res.success) {
-            //     toast.success(res.message);
-            //     // Navigate("/dashboard", { replace: true });
-            // } else {
-            //     toast.error(res.message);
-            // }
+            const data = new FormData();
+            data.append("email", values.email);
+            data.append("name", values.name);
+            data.append("mobile_number", values.mobile);
+            data.append("organization_name", values.organization_name);
+            data.append("password", values.password)
+            data.append("company_logo", values.company_logo)
+
+            const res = await addVendor(data);
+            if (res.success) {
+                toast.success(res.message);
+                navigate("/admin/vendor-list");
+            } else {
+                toast.error(res.message);
+            }
         }
     });
 
     return (
         <>
+            <ToastContainer />
             <Button className="w-100" type="button" variant="contained" size="large" onClick={handleOpen} startIcon={<PlusCircleOutlined />}>Add Vendor</Button>
             <Modal
                 open={open}
@@ -110,8 +123,7 @@ const AddVendor = () => {
                         noValidate
                         style={{
                             overflow: 'scroll',
-                            scrollbarWidth: 'none'
-
+                            // scrollbarWidth: 'none'
                         }}
                     >
                         <div>
@@ -122,11 +134,12 @@ const AddVendor = () => {
                                 name="company_logo"
                                 style={{ display: 'none' }}
                                 onChange={handleLogoChange}
-                                // onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={Boolean(touched.name && errors.name)}
                                 required
                             />
                             <Box sx={{
-                                display: 'flex',
+                                display: 'grid',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 padding: '10px'
@@ -147,7 +160,7 @@ const AddVendor = () => {
                                         }
                                     }}>
                                         {logo && (
-                                            <img src={logo} alt="Logo" style={{
+                                            <img src={URL.createObjectURL(logo)} alt="Logo" style={{
                                                 width: '80px',
                                                 height: '80px',
                                                 objectFit: 'contain'
@@ -157,7 +170,7 @@ const AddVendor = () => {
                                     </Button>
                                 </label>
                                 {touched.company_logo && errors.company_logo && (
-                                    <FormHelperText error>
+                                    <FormHelperText error id="standard-weight-helper-text-email-login">
                                         {errors.company_logo}
                                     </FormHelperText>
                                 )}
@@ -283,10 +296,14 @@ const AddVendor = () => {
                                     </Stack>
                                 </Grid>
                             </Grid>
-                            <Button type="submit" variant="contained" size="large" sx={{
+
+                            <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting} sx={{
                                 width: '100%',
-                                mt: '5px'
-                            }} >Create Vendor</Button>
+                                mt: '5px',
+                                background: '#0958d9!important'
+                            }}>
+                                Create Vendor
+                            </LoadingButton>
                         </div>
 
                     </form>
