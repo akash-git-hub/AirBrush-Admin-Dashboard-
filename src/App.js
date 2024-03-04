@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ThemeCustomization from 'themes';
 import ScrollTop from 'components/ScrollTop';
 import Login from "pages/authentication/Login";
@@ -11,7 +11,6 @@ import { useContext } from "react";
 import ErrorPage from "pages/ErrorPage";
 
 const App = () => {
-  const navigate = useNavigate()
   const { loggedIn } = useContext(AuthContext);
   return (
     <ThemeCustomization>
