@@ -1,9 +1,10 @@
 import { useState, useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { login } from "../../../networking/NetworkCall"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthContext } from "../../../states/AuthContext";
 
 // material-ui
 import {
@@ -34,7 +35,8 @@ import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 const AuthLogin = () => {
   const [checked, setChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const Navigate = useNavigate();
+  const { setLoggedIn } = useContext(AuthContext);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -55,8 +57,8 @@ const AuthLogin = () => {
     isSubmitting
   } = useFormik({
     initialValues: {
-      email: 'info@codedthemes.com',
-      password: '123456',
+      email: '',
+      password: '',
       // submit: null
     },
 
@@ -66,21 +68,25 @@ const AuthLogin = () => {
     }),
 
     onSubmit: async (values, { setErrors, setStatus, setSubmitting }) => {
-      console.log("this is values---------------->", values);
-      setLoading(true);
+
+
       const res = await login(values);
       if (res.success) {
+        toast.success(res.message);
+        setLoggedIn(true);
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("authToken", `${res.data.token}`);
-        toast.success("Logged in successfully");
-        // Navigate("/users-list", { replace: true });
+        Navigate("/admin/dashboard", { replace: true });
       } else {
+        // setStatus({ success: false });
+        // setSubmitting(false);
+        // setErrors({ submit: res.message });
         toast.error(res.message);
       }
-      setLoading(false);
+
 
       // try {
-      //   setStatus({ success: true });
+      //   setStatus({ success:false });
       //   setSubmitting(false);
       // } catch (err) {
       //   setStatus({ success: false });
@@ -151,7 +157,7 @@ const AuthLogin = () => {
             </Stack>
           </Grid>
 
-          <Grid item xs={12} sx={{ mt: -1 }}>
+          {/* <Grid item xs={12} sx={{ mt: -1 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <FormControlLabel
                 control={
@@ -169,7 +175,7 @@ const AuthLogin = () => {
                 Forgot Password?
               </Link>
             </Stack>
-          </Grid>
+          </Grid> */}
           {errors.submit && (
             <Grid item xs={12}>
               <FormHelperText error>{errors.submit}</FormHelperText>
