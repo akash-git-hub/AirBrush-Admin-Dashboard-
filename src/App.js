@@ -8,6 +8,7 @@ import EventList from "pages/event-list/EventList";
 import DashboardDefault from "pages/dashboard/index";
 import { AuthContext } from "./states/AuthContext";
 import { useContext } from "react";
+import ErrorPage from "pages/ErrorPage";
 
 const App = () => {
   const navigate = useNavigate()
@@ -25,6 +26,7 @@ const App = () => {
             <Route path="/admin/vendor-list" element={loggedIn ? <VendorList /> : <Navigate to="/" />} />
             <Route path="/admin/event-list" element={loggedIn ? <EventList /> : <Navigate to="/" />} />
           </Route>
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
       </ScrollTop>
     </ThemeCustomization>

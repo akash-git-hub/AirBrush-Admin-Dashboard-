@@ -131,6 +131,7 @@ export default function VendorTable() {
                                     role="checkbox"
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     tabIndex={-1}
+                                    key={index}
                                 >
                                     <TableCell align="left">
                                         <img src={row.company_logo} className='img-fluid eventimg' alt="" style={{

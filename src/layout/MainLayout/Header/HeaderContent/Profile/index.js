@@ -54,8 +54,8 @@ const Profile = () => {
     // logout
     setLoggedIn(false);
     localStorage.clear();
-    navigate("/", { replace: true });
     toast.success("Log out successfully")
+    navigate("/", { replace: true });
   };
 
   const anchorRef = useRef(null);

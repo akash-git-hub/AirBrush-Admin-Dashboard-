@@ -1,44 +1,9 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
-// material-ui
-import { Box, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, } from '@mui/material';
 import ActiveInactive from 'components/@extended/ActiveInactive';
-
-// project import
-// import ActiveInactive from 'components/@extended/ActiveInactive';
-
-function createData(image, eventName, vendorName, productName, address, dateTime, activeInactive) {
-    return { image, eventName, vendorName, productName, address, dateTime, activeInactive, };
-}
-
-function descendingComparator(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-function getComparator(order, orderBy) {
-    return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-}
-
+import Pagination from 'themes/overrides/Pagination';
+import { Box, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import Loader from 'components/Loader';
 // ==============================|| ORDER TABLE - HEADER CELL ||============================== //
 
 const headCells = [
@@ -46,7 +11,7 @@ const headCells = [
         id: 'image',
         align: 'left',
         disablePadding: false,
-        label: 'Events Images',
+        label: 'Event Image',
     },
     {
         id: 'eventName',
@@ -86,9 +51,9 @@ const headCells = [
     },
 ];
 
-// ==============================|| ORDER TABLE - HEADER ||============================== //
+// ==============================|| EVENT TABLE - HEADER ||============================== //
 
-function EventTableHead({ order, orderBy }) {
+function EventTableHead() {
     return (
         <TableHead>
             <TableRow>
@@ -97,7 +62,6 @@ function EventTableHead({ order, orderBy }) {
                         key={headCell.id}
                         align={headCell.align}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
-                        sortDirection={orderBy === headCell.id ? order : false}
                     >
                         {headCell.label}
                     </TableCell>
@@ -107,113 +71,118 @@ function EventTableHead({ order, orderBy }) {
     );
 }
 
-EventTableHead.propTypes = {
-    order: PropTypes.string,
-    orderBy: PropTypes.string
-};
-
-// ==============================|| ORDER TABLE ||============================== //
+// ==============================|| EVENT TABLE ||============================== //
 
 export default function EventTable() {
-    const [order] = useState('asc');
-    const [orderBy] = useState('eventName');
-    const [selected] = useState([]);
+    const [loading, setLoading] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
+    const [eventData, setEventData] = useState([
+        { id: 10, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
+        { id: 9, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
+        { id: 8, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
+        { id: 7, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
+        { id: 6, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
+        { id: 5, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
+        { id: 4, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
+        { id: 3, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
+        { id: 2, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
+        { id: 1, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
+    ]);
 
-    const isSelected = (eventName) => selected.indexOf(eventName) !== -1;
 
-    const [buttonStates, setButtonStates] = useState({
-        1: true, // Initial state for button with id 1
-        2: false,
-        5: true,
-        8: true,
-    });
-
-    const handleButtonClick = (id, isActive) => {
-        setButtonStates(prevState => ({
-            ...prevState,
-            [id]: isActive, // Update state for the button with given id
-        }));
+    const handleButtonClick = (id) => {
+        const prevState = [...eventData];
+        const updatableData = prevState.map((e) => {
+            const event = { ...e }
+            if (e.id === id) {
+                if (e.status === 1) {
+                    event.status = 0
+                } else {
+                    event.status = 1
+                }
+            }
+            return event;
+        })
+        setEventData(updatableData)
+        // call api to update status here
     };
 
-
-
-    const rows = [
-        createData(84564564, 'Event Name', 'Akash Verma', 'T-shirt', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={1} isActive={buttonStates[1]} handleButtonClick={handleButtonClick} />),
-        createData(98764564, 'Event Name', 'Akash Verma', 'Cap', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={2} isActive={buttonStates[2]} handleButtonClick={handleButtonClick} />),
-        createData(98756325, 'Event Name', 'Akash Verma', 'Shock', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={3} isActive={buttonStates[3]} handleButtonClick={handleButtonClick} />),
-        createData(98652366, 'Event Name', 'Akash Verma', 'T-shirt', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={4} isActive={buttonStates[4]} handleButtonClick={handleButtonClick} />),
-        createData(13286564, 'Event Name', 'Akash Verma', 'Shock', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={5} isActive={buttonStates[5]} handleButtonClick={handleButtonClick} />),
-        createData(86739658, 'Event Name', 'Akash Verma', 'T-shirt', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={6} isActive={buttonStates[6]} handleButtonClick={handleButtonClick} />),
-        createData(13256498, 'Event Name', 'Akash Verma', 'Cap', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={7} isActive={buttonStates[7]} handleButtonClick={handleButtonClick} />),
-        createData(98753263, 'Event Name', 'Akash Verma', 'T-shirt', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={8} isActive={buttonStates[8]} handleButtonClick={handleButtonClick} />),
-        createData(98753275, 'Event Name', 'Akash Verma', 'Shock', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={9} isActive={buttonStates[9]} handleButtonClick={handleButtonClick} />),
-        createData(98753291, 'Event Name', 'Akash Verma', 'Shock', '202, C21, Park Vijay....(Indore (M.p))', '24-02-2024/ 10:00Am', <ActiveInactive id={10} isActive={buttonStates[10]} handleButtonClick={handleButtonClick} />)
-    ];
-
     return (
-        <Box>
-            <TableContainer
-                sx={{
-                    width: '100%',
-                    overflowX: 'auto',
-                    position: 'relative',
-                    display: 'block',
-                    maxWidth: '100%',
-                    '& td, & th': { whiteSpace: 'nowrap' }
-                }}
-            >
-                <Table
-                    aria-labelledby="tableTitle"
+        <>
+            {loading ? <Loader /> : <Box>
+                <TableContainer
                     sx={{
-                        '& .MuiTableCell-root:first-of-type': {
-                            pl: 2
-                        },
-                        '& .MuiTableCell-root:last-of-type': {
-                            pr: 3
-                        }
+                        width: '100%',
+                        overflowX: 'auto',
+                        position: 'relative',
+                        display: 'block',
+                        maxWidth: '100%',
+                        '& td, & th': { whiteSpace: 'nowrap' }
                     }}
                 >
-                    <EventTableHead order={order} orderBy={orderBy} />
-                    <TableBody>
-                        {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-                            const isItemSelected = isSelected(row.eventName);
-                            const labelId = `enhanced-table-checkbox-${index}`;
-
-                            return (
-                                <TableRow
-                                    hover
-                                    role="checkbox"
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    aria-checked={isItemSelected}
-                                    tabIndex={-1}
-                                    key={row.eventName}
-                                    selected={isItemSelected}
+                    <Table
+                        aria-labelledby="tableTitle"
+                        sx={{
+                            '& .MuiTableCell-root:first-of-type': {
+                                pl: 2
+                            },
+                            '& .MuiTableCell-root:last-of-type': {
+                                pr: 3
+                            }
+                        }}
+                    >
+                        <EventTableHead />
+                        {eventData.length ? <TableBody>
+                            {eventData.map((row, index) => {
+                                return (
+                                    <TableRow
+                                        hover
+                                        role="checkbox"
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        tabIndex={-1}
+                                        key={index}
+                                    >
+                                        <TableCell align="left">
+                                            <img src="https://mir-s3-cdn-cf.behance.net/projects/404/0ef7ec186619481.Y3JvcCw2MTc2LDQ4MzEsMCwxNjgx.jpg" className='img-fluid eventimg' alt="" style={{
+                                                width: '100%',
+                                                maxWidth: '50px',
+                                                maxHeight: '50px'
+                                            }} />
+                                        </TableCell>
+                                        <TableCell align="left">{row.eventName}</TableCell>
+                                        <TableCell align="left">{row.vendorName}</TableCell>
+                                        <TableCell align="left">{row.productName}</TableCell>
+                                        <TableCell align="right">{row.address}</TableCell>
+                                        <TableCell align="right">{row.dateTime}</TableCell>
+                                        <TableCell align="right">
+                                            <ActiveInactive id={row.id} isActive={row.status === 1 ? true : false} handleButtonClick={handleButtonClick} />
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody> : <TableBody>
+                            <TableRow tabIndex={-1}>
+                                <TableCell
+                                    colSpan={headCells.length}
+                                    sx={{
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        borderBottom: '0px solid #000'
+                                    }}
                                 >
-                                    <TableCell align="left">
-                                        <img src="https://mir-s3-cdn-cf.behance.net/projects/404/0ef7ec186619481.Y3JvcCw2MTc2LDQ4MzEsMCwxNjgx.jpg" className='img-fluid eventimg' alt="" style={{
-                                            width: '100%',
-                                            maxWidth: '50px',
-                                            maxHeight: '50px'
-                                        }} />
-                                    </TableCell>
-                                    <TableCell component="th" id={labelId} scope="row" align="left">
-                                        <Link color="secondary" component={RouterLink} to="">
-                                            {row.eventName}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell align="left">{row.vendorName}</TableCell>
-                                    <TableCell align="left">{row.productName}</TableCell>
-                                    <TableCell align="right">{row.address}</TableCell>
-                                    <TableCell align="right">{row.dateTime}</TableCell>
-                                    <TableCell align="right">
-                                       {row.activeInactive}
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                                    <Typography variant="h2">
+                                        Data Not Found
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>}
+
+                    </Table>
+                    {eventData.length > 0 && <Pagination count={totalNumberOfPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
+                </TableContainer>
+            </Box>}
+        </>
+
     );
 }
