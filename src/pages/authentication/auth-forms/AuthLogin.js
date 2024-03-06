@@ -72,7 +72,7 @@ const AuthLogin = () => {
 
       const res = await login(values);
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.msg);
         setLoggedIn(true);
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("authToken", `${res.data.token}`);
@@ -81,7 +81,7 @@ const AuthLogin = () => {
         // setStatus({ success: false });
         // setSubmitting(false);
         // setErrors({ submit: res.message });
-        toast.error(res.message);
+        toast.error(res.msg);
       }
 
 

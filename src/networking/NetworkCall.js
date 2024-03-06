@@ -14,7 +14,7 @@ const getHeader = () => {
 const postRequest = async (path, data) => {
     let res = {
         success: false,
-        message: "Something went wrong, please try again later",
+        msg: "Something went wrong, please try again later",
     };
     try {
         const response = await axios({
@@ -25,7 +25,7 @@ const postRequest = async (path, data) => {
         });
         res = response.data;
     } catch (err) {
-        res.message = err.response?.data.message || err.message;
+        res.msg = err.response?.data.msg || err.msg;
         return res;
     }
     return res;
@@ -34,7 +34,7 @@ const postRequest = async (path, data) => {
 const deleteRequest = async (path, data) => {
     let res = {
         success: false,
-        message: "Something went wrong, please try again later",
+        msg: "Something went wrong, please try again later",
     };
 
     try {
@@ -46,7 +46,7 @@ const deleteRequest = async (path, data) => {
         });
         res = response.data;
     } catch (err) {
-        res.message = err.response?.data.message || err.message;
+        res.msg = err.response?.data.msg || err.msg;
         return res;
     }
     return res;
@@ -55,7 +55,7 @@ const deleteRequest = async (path, data) => {
 const putRequest = async (path, data) => {
     let res = {
         success: false,
-        message: "Something went wrong, please try again later",
+        msg: "Something went wrong, please try again later",
     };
 
     try {
@@ -67,7 +67,7 @@ const putRequest = async (path, data) => {
         });
         res = response.data;
     } catch (err) {
-        res.message = err.response?.data.message || err.message;
+        res.msg = err.response?.data.msg || err.msg;
         return res;
     }
     return res;
@@ -76,7 +76,7 @@ const putRequest = async (path, data) => {
 const getRequest = async (path) => {
     let res = {
         success: false,
-        message: "Something went wrong, please try again later",
+        msg: "Something went wrong, please try again later",
     };
 
     try {
@@ -88,23 +88,23 @@ const getRequest = async (path) => {
         });
         res = response.data;
     } catch (err) {
-        res.message = err.response?.data.message || err.message;
+        res.msg = err.response?.data.msg || err.msg;
         return res;
     }
     return res;
 };
 
 export const login = async (data) => {
-    const path = "/superAdmin/auth/login";
+    const path = "/admin/user/login";
     return await postRequest(path, data);
 };
 
 export const addVendor = async (data) => {
-    const path = "/superAdmin/auth/addVendor";
+    const path = "/admin/user/create-vendor";
     return await postRequest(path, data);
 };
 
 export const getVendors = async (page) => {
-    const path = `/superAdmin/auth/getVendors?page=${page}`;
+    const path = `/admin/user/vendors?page=${page}`;
     return await getRequest(path);
 };

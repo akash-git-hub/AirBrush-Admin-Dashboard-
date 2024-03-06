@@ -89,8 +89,8 @@ export default function VendorTable() {
         const getData = async () => {
             const res = await getVendors(currentPage);
             if (res.success) {
-                setVendors(res.data);
-                setTotalNumberOfPages(res.totalNumberOfPages);
+                setVendors(res.data?.data);
+                setTotalNumberOfPages(res.data?.totalNumberOfPages);
             }
             setLoading(false);
         };
@@ -134,7 +134,7 @@ export default function VendorTable() {
                                     key={index}
                                 >
                                     <TableCell align="left">
-                                        <img src={row.company_logo} className='img-fluid eventimg' alt="" style={{
+                                        <img src={row.organization_logo} className='img-fluid eventimg' alt="" style={{
                                             width: '100%',
                                             maxWidth: '50px',
                                             maxHeight: '50px'
@@ -146,7 +146,7 @@ export default function VendorTable() {
                                             {row.email}
                                         </Link>
                                     </TableCell>
-                                    <TableCell align="left">{row.mobile_number}</TableCell>
+                                    <TableCell align="left">{row.mobile}</TableCell>
                                     <TableCell align="left">{row.password}</TableCell>
                                     <TableCell align="right">
                                         {row.organization_name}

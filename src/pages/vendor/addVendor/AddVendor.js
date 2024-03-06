@@ -48,11 +48,11 @@ const AddVendor = () => {
     const handleLogoChange = (event) => {
         const file = event.target.files[0];
         if (file && file.type.startsWith("image")) {
-            setFieldValue("company_logo", file);
+            setFieldValue("organization_logo", file);
             setLogo(file);
         } else {
             toast.error("Please select image type file");
-            setFieldValue("company_logo", null);
+            setFieldValue("organization_logo", null);
             setLogo(null);
         }
     };
@@ -74,14 +74,14 @@ const AddVendor = () => {
             name: '',
             mobile: '',
             organization_name: '',
-            company_logo: null
+            organization_logo: null
         },
 
         validationSchema: Yup.object().shape({
             email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
             password: Yup.string().max(255).required('Password is required'),
             name: Yup.string().max(200).required('Name is Required'),
-            company_logo: Yup.string().required("Company logo is required"),
+            organization_logo: Yup.string().required("Company logo is required"),
             mobile: Yup.string().required('Mobile number is required'),
             organization_name: Yup.string().required('Organization name is required')
         }),
@@ -90,17 +90,17 @@ const AddVendor = () => {
             const data = new FormData();
             data.append("email", values.email);
             data.append("name", values.name);
-            data.append("mobile_number", values.mobile);
+            data.append("mobile", values.mobile);
             data.append("organization_name", values.organization_name);
             data.append("password", values.password)
-            data.append("company_logo", values.company_logo)
+            data.append("organization_logo", values.organization_logo)
 
             const res = await addVendor(data);
             if (res.success) {
-                toast.success(res.message);
+                toast.success(res.msg);
                 navigate("/admin/vendor-list");
             } else {
-                toast.error(res.message);
+                toast.error(res.msg);
             }
         }
     });
@@ -131,7 +131,7 @@ const AddVendor = () => {
                                 accept="image/*"
                                 id="contained-button-file"
                                 type="file"
-                                name="company_logo"
+                                name="organization_logo"
                                 style={{ display: 'none' }}
                                 onChange={handleLogoChange}
                                 onBlur={handleBlur}
@@ -169,9 +169,9 @@ const AddVendor = () => {
                                         {!logo && <span>Upload Logo</span>}
                                     </Button>
                                 </label>
-                                {touched.company_logo && errors.company_logo && (
+                                {touched.organization_logo && errors.organization_logo && (
                                     <FormHelperText error id="standard-weight-helper-text-email-login">
-                                        {errors.company_logo}
+                                        {errors.organization_logo}
                                     </FormHelperText>
                                 )}
                             </Box>
