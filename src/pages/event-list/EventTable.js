@@ -1,18 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { getEvents, updateEventStatus } from "../../networking/NetworkCall"
 import ActiveInactive from 'components/@extended/ActiveInactive';
 import Pagination from 'themes/overrides/Pagination';
 import { Box, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import Loader from 'components/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // ==============================|| ORDER TABLE - HEADER CELL ||============================== //
 
 const headCells = [
-    {
-        id: 'image',
-        align: 'left',
-        disablePadding: false,
-        label: 'Event Image',
-    },
     {
         id: 'eventName',
         align: 'left',
@@ -33,13 +30,13 @@ const headCells = [
     },
     {
         id: 'address',
-        align: 'right',
+        align: 'left',
         disablePadding: false,
         label: 'Address'
     },
     {
         id: 'dateTime',
-        align: 'right',
+        align: 'left',
         disablePadding: false,
         label: 'Date/Time'
     },
@@ -77,39 +74,58 @@ export default function EventTable() {
     const [loading, setLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1);
     const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
-    const [eventData, setEventData] = useState([
-        { id: 10, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
-        { id: 9, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
-        { id: 8, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
-        { id: 7, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
-        { id: 6, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
-        { id: 5, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
-        { id: 4, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
-        { id: 3, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
-        { id: 2, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 1 },
-        { id: 1, eventName: 'Event Name', vendorName: 'Akash Verma', productName: 'T-shirt', address: '202, C21, Park Vijay....(Indore (M.p))', dateTime: '24-02-2024/ 10:00Am', status: 0 },
-    ]);
+    const [eventData, setEventData] = useState([]);
+
+    useEffect(() => {
+        setLoading(true);
+        const getData = async () => {
+            const res = await getEvents(currentPage);
+            if (res.success) {
+                setEventData(res.data?.data);
+                // toast.success(res.msg);
+                setTotalNumberOfPages(res.data?.totalNumberOfPages);
+            } else { toast.error(res.msg) }
+            setLoading(false);
+        }
+        getData();
+    }, [currentPage]);
 
 
-    const handleButtonClick = (id) => {
+    const handleButtonClick = async (id) => {
+        const eventId = id;
+        let status = ""; // updateble status
         const prevState = [...eventData];
         const updatableData = prevState.map((e) => {
             const event = { ...e }
             if (e.id === id) {
-                if (e.status === 1) {
-                    event.status = 0
+                if (e.status === "Active") {
+                    event.status = "Inactive";
+                    status = "Inactive"
                 } else {
-                    event.status = 1
+                    event.status = "Active"
+                    status = "Active"
                 }
             }
             return event;
         })
         setEventData(updatableData)
         // call api to update status here
+
+        const data = { status }
+
+        const res = await updateEventStatus(eventId, data);
+
+        if (res.success) {
+            toast.success(res.msg)
+        } else {
+            setEventData(prevState)
+            toast.error(res.msg);
+        }
     };
 
     return (
         <>
+            <ToastContainer />
             {loading ? <Loader /> : <Box>
                 <TableContainer
                     sx={{
@@ -143,20 +159,13 @@ export default function EventTable() {
                                         tabIndex={-1}
                                         key={index}
                                     >
-                                        <TableCell align="left">
-                                            <img src="https://mir-s3-cdn-cf.behance.net/projects/404/0ef7ec186619481.Y3JvcCw2MTc2LDQ4MzEsMCwxNjgx.jpg" className='img-fluid eventimg' alt="" style={{
-                                                width: '100%',
-                                                maxWidth: '50px',
-                                                maxHeight: '50px'
-                                            }} />
-                                        </TableCell>
-                                        <TableCell align="left">{row.eventName}</TableCell>
-                                        <TableCell align="left">{row.vendorName}</TableCell>
-                                        <TableCell align="left">{row.productName}</TableCell>
-                                        <TableCell align="right">{row.address}</TableCell>
-                                        <TableCell align="right">{row.dateTime}</TableCell>
+                                        <TableCell align="left">{row.name}</TableCell>
+                                        <TableCell align="left">{row.vendor.name}</TableCell>
+                                        <TableCell align="left">{row.productCategories.join(" / ")}</TableCell>
+                                        <TableCell align="left">{row.address}</TableCell>
+                                        <TableCell align="left">{row.date}/ {row.time}</TableCell>
                                         <TableCell align="right">
-                                            <ActiveInactive id={row.id} isActive={row.status === 1 ? true : false} handleButtonClick={handleButtonClick} />
+                                            <ActiveInactive id={row.id} isActive={row.status === "Active" ? true : false} handleButtonClick={handleButtonClick} />
                                         </TableCell>
                                     </TableRow>
                                 );

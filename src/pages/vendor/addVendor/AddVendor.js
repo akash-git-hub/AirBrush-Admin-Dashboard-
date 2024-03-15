@@ -21,7 +21,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 600,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -114,17 +114,21 @@ const AddVendor = () => {
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                style={{
+                    overflow: 'scroll',
+                    // scrollbarWidth: 'none'
+                }}
+
             >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h2" component="h2">
+                <Box sx={style} >
+                    <Typography id="modal-modal-title" variant="h2" component="h2" sx={{
+                        textAlign: 'center'
+                    }}>
                         Add Vendor
                     </Typography>
                     <form onSubmit={handleSubmit}
                         noValidate
-                        style={{
-                            overflow: 'scroll',
-                            // scrollbarWidth: 'none'
-                        }}
+
                     >
                         <div>
                             <input
@@ -144,6 +148,7 @@ const AddVendor = () => {
                                 alignItems: 'center',
                                 padding: '10px'
                             }}>
+
                                 <label htmlFor="contained-button-file">
                                     <Button variant="contained" component="span" className="mb-2 mt-4" sx={{
                                         background: 'transparent',
@@ -177,7 +182,7 @@ const AddVendor = () => {
                             </Box>
 
                             <Grid container spacing={1}>
-                                <Grid item xs={12}>
+                                <Grid item lg={6} xs={12}>
                                     <Stack spacing={1}>
                                         <InputLabel htmlFor="name">Name</InputLabel>
                                         <OutlinedInput
@@ -198,7 +203,7 @@ const AddVendor = () => {
                                         )}
                                     </Stack>
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item lg={6} xs={12}>
                                     <Stack spacing={1}>
                                         <InputLabel htmlFor="email-login">Email Address</InputLabel>
                                         <OutlinedInput
@@ -219,7 +224,7 @@ const AddVendor = () => {
                                         )}
                                     </Stack>
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item lg={6} xs={12}>
                                     <Stack spacing={1}>
                                         <InputLabel htmlFor="mobile">Mobile No</InputLabel>
                                         <OutlinedInput
@@ -240,7 +245,7 @@ const AddVendor = () => {
                                         )}
                                     </Stack>
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item lg={6} xs={12}>
                                     <Stack spacing={1}>
                                         <InputLabel htmlFor="password-login">Password</InputLabel>
                                         <OutlinedInput
@@ -274,7 +279,7 @@ const AddVendor = () => {
                                         )}
                                     </Stack>
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item lg={12} xs={12}>
                                     <Stack spacing={1}>
                                         <InputLabel htmlFor="organization_name">Organization Name</InputLabel>
                                         <OutlinedInput
@@ -299,7 +304,7 @@ const AddVendor = () => {
 
                             <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting} sx={{
                                 width: '100%',
-                                mt: '5px',
+                                marginTop: '15px',
                                 background: '#0958d9!important'
                             }}>
                                 Create Vendor

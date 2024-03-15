@@ -73,6 +73,27 @@ const putRequest = async (path, data) => {
     return res;
 };
 
+const patchRequest = async (path, data) => {
+    let res = {
+        success: false,
+        msg: "Something went wrong, please try again later",
+    };
+
+    try {
+        const response = await axios({
+            method: "PATCH",
+            url: `${baseUrl}${path}`,
+            data,
+            headers: getHeader(),
+        });
+        res = response.data;
+    } catch (err) {
+        res.msg = err.response?.data.msg || err.msg;
+        return res;
+    }
+    return res;
+};
+
 const getRequest = async (path) => {
     let res = {
         success: false,
@@ -108,3 +129,18 @@ export const getVendors = async (page) => {
     const path = `/admin/user/vendors?page=${page}`;
     return await getRequest(path);
 };
+
+export const getEvents = async (page) => {
+    const path = `/admin/event?page=${page}`;
+    return await getRequest(path);
+}
+
+export const updateEventStatus = async (eventId, data) => {
+    const path = `/admin/event/update-status/${eventId}`;
+    return await patchRequest(path, data);
+}
+
+export const getAnalytics = async () => {
+    const path = `/admin/analytics`;
+    return await getRequest(path);
+}

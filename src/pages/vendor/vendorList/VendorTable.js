@@ -19,6 +19,12 @@ const headCells = [
         label: 'Vendor Logo',
     },
     {
+        id: 'vendorUniqueId',
+        align: 'left',
+        disablePadding: false,
+        label: 'Vendor Id',
+    },
+    {
         id: 'vendorName',
         align: 'left',
         disablePadding: false,
@@ -140,6 +146,7 @@ export default function VendorTable() {
                                             maxHeight: '50px'
                                         }} />
                                     </TableCell>
+                                    <TableCell align="left">{row.unique_id}</TableCell>
                                     <TableCell align="left">{row.name}</TableCell>
                                     <TableCell component="th" id={labelId} scope="row" align="left">
                                         <Link color="secondary" component={RouterLink} to="">

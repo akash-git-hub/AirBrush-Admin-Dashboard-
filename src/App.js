@@ -16,7 +16,7 @@ const App = () => {
     <ThemeCustomization>
       <ScrollTop>
         <Routes>
-          <Route path="/" element={loggedIn ? <Navigate to="/admin" /> : <Login />} />
+          <Route path="/" element={loggedIn ? <Navigate to="/admin/dashboard" /> : <Login />} />
           <Route
             path="/admin"
             element={loggedIn ? <MainLayout /> : <Navigate to="/" />}
