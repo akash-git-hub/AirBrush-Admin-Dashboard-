@@ -52,14 +52,14 @@ const DashboardDefault = () => {
             <Grid item xs={2} sx={{ mb: -2.25 }}>
               <AddVendor />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
               <AnalyticEcommerce title="Total Active Vendor" count="500" percentage={59.3} extra="35,000" icon={<Face4Icon color='primary' fontSize="large" />} />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <AnalyticEcommerce title="Total Vendors" count={analyticsData && analyticsData.vendorsCount} percentage={70.5} extra="8,900" icon={<SupervisedUserCircleIcon color='info' fontSize="large" />} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <AnalyticEcommerce title="Total Order" count={analyticsData && analyticsData.ordersCount} percentage={27.4} isLoss color="warning" extra="1,943" icon={<LocalMallIcon color='success' fontSize="large" />} />
+              <AnalyticEcommerce title="Total Orders" count={analyticsData && analyticsData.ordersCount} percentage={27.4} isLoss color="warning" extra="1,943" icon={<LocalMallIcon color='success' fontSize="large" />} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <AnalyticEcommerce title="Total Events" count={analyticsData && analyticsData.eventsCount} percentage={27.4} isLoss color="warning" extra="$20,395" icon={<EventNoteIcon color='error' fontSize="large" />} />
