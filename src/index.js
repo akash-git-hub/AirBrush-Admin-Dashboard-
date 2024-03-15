@@ -15,7 +15,7 @@ root.render(
   <>
     <ReduxProvider store={store}>
       <AuthProvider>
-        <HashRouter basename="/">
+        <HashRouter>
           <App />
         </HashRouter>
       </AuthProvider>
